@@ -1,21 +1,282 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yimma Pilote</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #041338;
+            --navy-2: #072a73;
+            --blue: #0a6cff;
+            --blue-2: #2aa0ff;
+            --ink: #0b1f4d;
+            --muted: #5a6b8f;
+            --soft: #eef5ff;
+            --line: #dce8fb;
+            --white: #fff;
+            --radius: 16px;
+            --header-h: 68px;
+        }
+        *, *::before, *::after { box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 12px); }
+        body {
+            margin: 0;
+            font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            color: var(--ink);
+            background: var(--white);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        a { color: inherit; }
+        h1, h2, h3, p { margin: 0; }
+        :focus-visible { outline: 3px solid var(--blue-2); outline-offset: 3px; }
 
+        /* ============ Header ============ */
+        header {
+            position: sticky; top: 0; z-index: 50;
+            height: var(--header-h);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px;
+            background: var(--navy);
+            color: var(--white);
+            border-bottom: 1px solid rgba(255,255,255,.06);
+        }
+        .heading { display: flex; align-items: center; gap: 12px; }
+        .heading p:first-child { font-weight: 700; font-size: 1.1rem; line-height: 1.15; }
+        .heading p:last-child { font-size: .72rem; color: #a9c2f2; line-height: 1.2; }
+        .logo-container button {
+            width: 42px; height: 42px; padding: 0; border: 0; border-radius: 50%;
+            font-size: 0; color: transparent; cursor: pointer;
+            background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%230a6cff' d='M13.5 2.5c3.6.4 6.6 3.4 7 7-.2 3-2 5.6-4.6 7.2l-1.4 1-3.6-3.6 1-1.4c1.6-2.6 4.2-4.4 7.2-4.6zM4 14.5c1.6-.3 3 .2 4 1.2s1.500 2.400 1.200 4c-1.600.3-3.200-.1-4.200-1.100S3.600 16.100 4 14.500zM9 8.500l-3.800.6-2 3.400 3.400.6zM15 20l-.6 3.800 3.400-2 .6-3.400z'/%3E%3C/svg%3E") center / 62% no-repeat;
+            box-shadow: 0 0 0 3px rgba(10,108,255,.55);
+        }
+
+        .nav-div { font-size: 2rem; line-height: 1; color: var(--white); cursor: pointer; user-select: none; padding: 4px 8px; }
+        .nav-barre {
+            position: fixed; top: 0; right: 0; bottom: 0;
+            width: min(84vw, 340px);
+            padding: 72px 18px 28px;
+            font-size: 1rem; line-height: 1.5; cursor: default;
+            background: linear-gradient(170deg, #0a47d1 0%, #06277a 38%, #041338 100%);
+            box-shadow: -18px 0 40px rgba(0,0,0,.35);
+            overflow-y: auto;
+            transform: translateX(105%);
+            visibility: hidden;
+            transition: transform .3s ease, visibility 0s .3s;
+            z-index: 70;
+        }
+        .nav-barre.open { transform: none; visibility: visible; transition: transform .3s ease; }
+        .nav-overlay {
+            position: fixed; inset: 0; z-index: 60;
+            background: rgba(2,8,28,.55);
+            opacity: 0; pointer-events: none; transition: opacity .3s ease;
+        }
+        .nav-overlay.open { opacity: 1; pointer-events: auto; }
+        .close-nav {
+            position: absolute; top: 18px; right: 18px; width: 40px; height: 40px;
+            border: 0; border-radius: 50%; background: rgba(255,255,255,.12); cursor: pointer;
+        }
+        .close-nav::before, .close-nav::after {
+            content: ""; position: absolute; left: 11px; top: 19px; width: 18px; height: 2px;
+            background: var(--white); border-radius: 2px; transform: rotate(45deg);
+        }
+        .close-nav::after { transform: rotate(-45deg); }
+
+        ul { list-style: none; margin: 0; padding: 0; }
+        .nav-interne {
+            font-size: .78rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+            color: #9db8ec; padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,.14);
+        }
+        .nav-interne li { font-size: 1rem; font-weight: 500; letter-spacing: 0; text-transform: none; }
+        .nav-interne a {
+            display: block; padding: 12px 14px; margin-top: 4px;
+            color: var(--white); text-decoration: none; border-radius: 12px;
+        }
+        .nav-interne a:hover, .nav-interne a:focus-visible { background: rgba(255,255,255,.12); }
+        .nav-interne li:first-of-type a { background: var(--blue); font-weight: 600; }
+        .nav-externe { display: grid; gap: 12px; margin-top: 22px; }
+        .nav-externe a {
+            display: block; text-align: center; padding: 13px 18px; border-radius: 999px;
+            text-decoration: none; font-weight: 600; color: var(--white);
+            border: 1.5px solid rgba(255,255,255,.4);
+        }
+        .nav-externe li:last-child a { background: var(--blue); border-color: var(--blue); }
+
+        /* ============ Boutons ============ */
+        .btn, .hero-section > a, .philo-section > a, .principe-section a {
+            display: inline-block; padding: 14px 28px; border-radius: 999px;
+            background: var(--blue); color: var(--white); font-weight: 600; text-decoration: none;
+            box-shadow: 0 8px 22px rgba(10,108,255,.35);
+            transition: transform .2s ease, background .2s ease;
+        }
+        .hero-section > a:hover, .philo-section > a:hover { background: #0a5ce0; transform: translateY(-2px); }
+
+        /* ============ Sections ============ */
+        main section { padding: 56px 20px; }
+        main section > * { max-width: 1100px; margin-left: auto; margin-right: auto; }
+        h2 { font-size: clamp(1.6rem, 4.5vw, 2.2rem); line-height: 1.2; font-weight: 800; margin-bottom: 20px; }
+        h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 4px; }
+        main p { color: var(--muted); }
+
+        /* Hero */
+        .hero-section {
+            position: relative; overflow: hidden;
+            padding: 64px 20px 80px;
+            min-height: 78vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+            background: radial-gradient(circle at 85% 30%, #1465e8 0, transparent 45%), linear-gradient(160deg, #0a3fb8 0%, #06215e 55%, #041338 100%);
+            color: var(--white);
+        }
+        .hero-section::after {
+            content: ""; position: absolute; right: -90px; bottom: -70px; width: 360px; height: 360px;
+            border-radius: 60px; background: linear-gradient(135deg, #1a76ff, #0a3fb8);
+            opacity: .45; transform: rotate(18deg); z-index: 0;
+        }
+        .hero-section > * { position: relative; z-index: 1; width: 100%; max-width: 1100px; }
+        .hero-section h1 { font-size: clamp(2.2rem, 7vw, 3.6rem); line-height: 1.12; font-weight: 800; margin-bottom: 20px; max-width: 14em; }
+        .hero-section h1 span { color: var(--blue-2); }
+        .hero-section p { color: #dbe7ff; font-size: 1.05rem; max-width: 34em; margin-bottom: 30px; }
+        .hero-section > a { width: auto; }
+
+        /* Vision, ambitions */
+        .vision-section { background: var(--white); }
+        .vision-section p { font-size: 1.05rem; max-width: 52em; }
+        .ambition-section { background: var(--soft); }
+        .ambition-section ul { display: grid; gap: 14px; margin-top: 18px; }
+        .ambition-section li {
+            position: relative; padding: 18px 20px 18px 56px; background: var(--white);
+            border-radius: var(--radius); border: 1px solid var(--line); color: var(--ink); font-weight: 500;
+        }
+        .ambition-section li::before {
+            content: ""; position: absolute; left: 18px; top: 20px; width: 24px; height: 24px; border-radius: 50%;
+            background: var(--soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230a6cff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.500l4 4 8-9'/%3E%3C/svg%3E") center / 14px no-repeat;
+        }
+
+        /* Compétences */
+        .competence-section { background: var(--white); }
+        .competence-section > div { display: grid; gap: 14px; }
+        .competence-section > div > div:first-child { margin-bottom: 8px; }
+        .competence-section p { font-size: .95rem; }
+        .skill { display: flex; align-items: flex-start; gap: 14px; padding: 18px; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 6px 18px rgba(10,50,140,.06); }
+        .skill h3 { text-transform: none; }
+        .skill p { font-size: .85rem; line-height: 1.45; }
+        .ic {
+            flex: none; width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center;
+            font-size: 0; color: transparent; background: var(--soft);
+        }
+        .ic::before { font-size: 1.05rem; font-weight: 800; color: var(--blue); }
+        .ic.web::before { content: "\1F310"; font-size: 1.4rem; }
+        .ic.html { background: #fff1ea; } .ic.html::before { content: "5"; color: #e44d26; font-size: 1.3rem; }
+        .ic.css { background: #e8f0ff; } .ic.css::before { content: "3"; color: #1572b6; font-size: 1.3rem; }
+        .ic.js { background: #f7df1e; } .ic.js::before { content: "JS"; color: #111; font-size: 1rem; }
+        .ic.ia::before { content: "\2726"; font-size: 1.4rem; }
+
+        /* Conditions */
+        .conditions-section { background: var(--soft); }
+        .conditions-section > div { display: grid; gap: 14px; }
+        .conditions-section > div > div { background: var(--white); border-radius: var(--radius); padding: 18px 20px; border-left: 5px solid var(--blue); box-shadow: 0 6px 18px rgba(10,50,140,.06); }
+        .conditions-section p { font-size: .92rem; }
+
+        /* Philosophie */
+        .philo-section { background: var(--white); text-align: center; }
+        .philo-section p { max-width: 44em; font-size: 1.05rem; margin-bottom: 28px; }
+        .philo-section strong { display: block; color: var(--ink); font-size: 1.35rem; margin-bottom: 8px; }
+
+        /* Double apprentissage */
+        .double-apprentissage-section { background: var(--soft); }
+        .double-apprentissage-section ol { display: grid; gap: 16px; counter-reset: step; }
+        .double-apprentissage-section li {
+            position: relative; counter-increment: step; padding: 22px 22px 22px 70px; background: var(--white);
+            border: 1px solid var(--line); border-radius: var(--radius); color: var(--muted);
+        }
+        .double-apprentissage-section li::before {
+            content: counter(step); position: absolute; left: 20px; top: 20px; width: 36px; height: 36px; border-radius: 50%;
+            display: grid; place-items: center; background: var(--blue); color: var(--white); font-weight: 700;
+        }
+
+        /* IA */
+        .ia-section { background: var(--white); }
+        .ia-section p { padding: 24px; border-radius: var(--radius); background: var(--soft); border-left: 5px solid var(--blue); color: var(--ink); max-width: 52em; }
+
+        /* Profil */
+        .profil-section { background: var(--soft); }
+        .profil-section > div { display: grid; gap: 16px; }
+        .profil-section p { padding: 24px; border-radius: var(--radius); background: var(--white); border: 1px solid var(--line); }
+        .profil-section p:last-child { background: linear-gradient(135deg, #0a6cff, #06277a); color: #e6efff; border: 0; }
+        .profil-section strong { color: var(--ink); }
+        .profil-section p:last-child strong { color: var(--white); }
+
+        /* Principe directeur */
+        .principe-section { background: var(--white); padding-bottom: 72px; }
+        .principe-section > p { font-size: 1.1rem; color: var(--ink); font-weight: 600; margin-bottom: 28px; }
+        .principe-section > div {
+            display: flex; flex-direction: column; gap: 18px; align-items: flex-start;
+            padding: 28px; border-radius: 20px; color: var(--white);
+            background: linear-gradient(120deg, #0a6cff 0%, #06277a 100%);
+        }
+        .principe-section > div p { color: var(--white); font-size: 1.4rem; font-weight: 700; }
+        .principe-section > div a { background: var(--white); color: var(--blue); box-shadow: none; }
+        .principe-section > div a:hover { background: var(--soft); }
+
+        /* ============ Tablette ============ */
+        @media (min-width: 700px) {
+            header { padding: 0 32px; }
+            main section { padding: 72px 32px; }
+            .ambition-section ul, .conditions-section > div { grid-template-columns: repeat(2, 1fr); }
+            .profil-section > div { grid-template-columns: 1fr 1fr; }
+            .principe-section > div { flex-direction: row; align-items: center; justify-content: space-between; padding: 36px 40px; }
+        }
+
+        /* ============ Ordinateur ============ */
+        @media (min-width: 1024px) {
+            header { padding: 0 48px; }
+            .nav-div { font-size: 0; padding: 0; }
+            .nav-barre {
+                position: static; transform: none; visibility: visible; width: auto; padding: 0;
+                display: flex; align-items: center; gap: 36px;
+                background: none; box-shadow: none; overflow: visible; transition: none; cursor: auto;
+            }
+            .nav-overlay, .close-nav { display: none; }
+            .nav-interne { display: flex; gap: 6px; font-size: 0; padding: 0; border: 0; }
+            .nav-interne li { font-size: .92rem; }
+            .nav-interne li:nth-child(n+5) { display: none; }
+            .nav-interne a { margin: 0; padding: 8px 14px; border-radius: 0; border-bottom: 2px solid transparent; }
+            .nav-interne a:hover { background: none; border-bottom-color: var(--blue-2); }
+            .nav-interne li:first-of-type a { background: none; border-bottom-color: var(--blue-2); }
+            .nav-externe { display: flex; margin: 0; gap: 12px; }
+            .nav-externe a { padding: 9px 20px; font-size: .88rem; }
+
+            .hero-section { padding: 90px 48px 110px; }
+            .hero-section::after { width: 520px; height: 520px; right: 4%; bottom: -110px; }
+            .competence-section > div { grid-template-columns: 1fr 1fr; }
+            .competence-section > div > div:first-child { grid-column: 1 / -1; max-width: 46em; }
+            .ambition-section ul { grid-template-columns: repeat(2, 1fr); }
+            .conditions-section > div { grid-template-columns: repeat(3, 1fr); }
+            .double-apprentissage-section ol { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            * { transition: none !important; }
+        }
+    </style>
 </head>
+<body>
 <header>
     <div class="heading">
-        <div class="logo-container"><button type="button">Logo</button></div>
+        <div class="logo-container"><button type="button" aria-label="Logo">Logo</button></div>
         <div>
             <p>Yimma Pilote</p>
             <p>PApprentissage guidée</p>
         </div>
     </div>
-    <div class="nav-div">≡
-        <nav class="nav-barre">
+    <div class="nav-div" id="menu-toggle">≡
+        <nav class="nav-barre" id="menu">
+            <button class="close-nav" type="button" aria-label="Fermer le menu"></button>
             <ul class="nav-interne">Navigation interne
                 <li><a href="#accueil">Accueil</a></li>
                 <li><a href="#vision">Vision</a></li>
@@ -36,195 +297,249 @@
     </div>
 </header>
 
-<body>
-    <main>
-        <!============Section hero==============>
-        <section class="hero-section">
-            <h1 id="accueil">Apprendre le développement web à l'ère de l'IA</h1>
-            <p>
-                Yimma Pilote est un programme d’apprentissage du développement web Front-end, 
-                conçu pour accompagner des débutants par la pratique et des projets réels. 
-            </p>
-            <a href="">Commencer maintenant</a>
-        </section>
-        <!===========Vision===========>
-        <section class="vision-section">
-            <h2 id="vision">Vision</h2>
-            <p>
-                Le Yimma Pilote vise à former une jeune génération de développeurs dotés d’une pensée logique
-                et créative, capables de travailler avec l’IA sans devenir dépendants d’elle, Ils seront en 
-                mesure de construire des projets réels pour valoriser leurs compétences
-                et les rendre visibles. L’objectif à terme est de former des développeurs fonctionnels, 
-                autonomes, reconnus et capables de se distinguer par la qualité de leur raisonnement et de leurs réalisations.
-            </p>
-        </section>
-        <!======================Ambitions============>
-        <section class="ambition-section">
-            <h2 id="ambition">Ambitions</h2>
-            <p>
-                Notre ambition à travers ce programme pilote est de :
-                <ul>
-                    <li>Former des développeurs capables de résoudre des problèmes par eux-mêmes.</li>
-                    <li>Développer une véritable pensée algorithmique, logique et créative chez nos apprenants.</li>
-                    <li>Faire de la pratique et des projets une composante centrale de l’apprentissage.</li>
-                    <li>Apprendre aux participants à construire une présence professionnelle à travers leurs réalisations.</li>
-                    <li>Préparer progressivement les apprenants à un environnement professionnel où l’IA devient un
-                        outil de productivité.</li>
-                    <li>Amener les apprenants à sortir de leurs zones de confort et se construire une identité
-                        professionnelle à travers les réseaux sociaux.</li>
-                </ul>
-            </p>
-        </section>
-        <!========================Compétences==========>
-        <section class="competence-section">
-            <h2 id="competences">Ce que nous enseignons</h2>
+<main>
+    <!-- Section hero -->
+    <section class="hero-section">
+        <h1 id="accueil">Apprendre le <span>développement web</span> à l'ère de l'IA</h1>
+        <p>
+            Yimma Pilote est un programme d’apprentissage du développement web Front-end, 
+            conçu pour accompagner des débutants par la pratique et des projets réels. 
+        </p>
+        <a href="">Commencer maintenant</a>
+    </section>
+
+    <!-- Vision -->
+    <section class="vision-section">
+        <h2 id="vision">Vision</h2>
+        <p>
+            Le Yimma Pilote vise à former une jeune génération de développeurs dotés d’une pensée logique
+            et créative, capables de travailler avec l’IA sans devenir dépendants d’elle, Ils seront en 
+            mesure de construire des projets réels pour valoriser leurs compétences
+            et les rendre visibles. L’objectif à terme est de former des développeurs fonctionnels, 
+            autonomes, reconnus et capables de se distinguer par la qualité de leur raisonnement et de leurs réalisations.
+        </p>
+    </section>
+
+    <!-- Ambitions -->
+    <section class="ambition-section">
+        <h2 id="ambition">Ambitions</h2>
+        <p>
+            Notre ambition à travers ce programme pilote est de :
+        </p>
+        <ul>
+            <li>Former des développeurs capables de résoudre des problèmes par eux-mêmes.</li>
+            <li>Développer une véritable pensée algorithmique, logique et créative chez nos apprenants.</li>
+            <li>Faire de la pratique et des projets une composante centrale de l’apprentissage.</li>
+            <li>Apprendre aux participants à construire une présence professionnelle à travers leurs réalisations.</li>
+            <li>Préparer progressivement les apprenants à un environnement professionnel où l’IA devient un
+                outil de productivité.</li>
+            <li>Amener les apprenants à sortir de leurs zones de confort et se construire une identité
+                professionnelle à travers les réseaux sociaux.</li>
+        </ul>
+    </section>
+
+    <!-- Compétences -->
+    <section class="competence-section">
+        <h2 id="competences">Ce que nous enseignons</h2>
+        <div>
             <div>
-                <div>
-                    <p>Yimma Pilote donne d'abord les fondamentaux du web, les compétences en developpement 
-                        tout en intercalant les langages pour donner la main aux apprenants très tôt avant de 
-                        passer aux projets. Ensuite, ils apprennent à travailler avec l'IA comme un assistant 
-                        et non un guide. Nous délivrerons également une attestation de participation pour valoir
-                        ce que de droit.
-                    </p>
-                </div>
-
-                <div>
-                    <div>icone</div>
-                    <div>
-                        <h3>fondamentaux du web</h3>
-                        <p>Inernet vs web, DNS, requêtes http et https, DevTools, Git/GiHub, environnement de travail...</p>
-                    </div>
-                </div>
-
-                <div>
-                    <div>icone</div>
-                    <div>
-                        <h3>HTML5</h3>
-                        <p>Structure d'un document html, sémentique html, formulaires et accessibilté html, html intermédiaire & avancé...</p>
-                    </div>
-                </div>
-
-                <div>
-                    <div>icone</div>
-                    <div>
-                        <h3>CSS3</h3>
-                        <p>Sélecteurs CSS, Box Modal, CSS grid, Flexbox, CSS intermédiaire & avancé...</p>
-                    </div>
-                </div>
-
-                <div>
-                    <div>icone</div>
-                    <div>
-                        <h3>JavaScript</h3>
-                        <p>Js de base, fonctions, natives, fléchées & classiques, manipulaion du DOM, gestion des évènement, POO en JS...</p>
-                    </div>
-                </div>
-
-                <div>
-                    <div>icone</div>
-                    <div>
-                        <h3>Copilot IA</h3>
-                        <p>Apprends à coder avec efficacement avec l'IA sans dépendre d'elle, notamment avec copilot et claude code.</p>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-        <!==================Conditions d'accès==============>
-        <section>
-            <h2 id="conditions">Conditions de participation au programme pilote</h2>
-            <div>
-                <div>
-                    <h3>Engagement</h3>
-                    <p>Être réellement disposé à apprendre et à travailler régulièrement.</p>
-                </div>
-                <div>
-                    <h3>Progression publique</h3>
-                    <p>Publier régulièrement sa progression, ses difficultés, ses apprentissages et ses
-                        réalisations sur LinkedIn et Facebook.</p>
-                </div>
-                <div>
-                    <h3>Exercices</h3>
-                    <p>Traiter les exercices confiés et soumettre son travail dans les délais définis.</p>
-                </div>
-                <div>
-                    <h3>Projets</h3>
-                    <p>Réaliser les mini-projets et productions demandés afin de construire
-                        progressivement des preuves de compétence.</p>
-                    </div>
-                    <div>
-                        <h3>Assiduité</h3>
-                        <p>Rester actif dans le programme, signaler et justifier les difficultés ou absences
-                            prolongées.</p>
-                        </div>
-                        <div>
-                            <h3>Autonomie</h3>
-                            <p>Chercher, expérimenter et tenter de résoudre les problèmes avant de
-                                demander une solution toute faite. </p>
-                            </div>
-                            <div>
-                    <h3>Intégrité</h3>
-                    <p>S'impregner des valeurs de la plateforme, s'engager à les respecter et les incarner.</p>
-                </div>
-            </div>
-        </section>
-        <!=====================Philosophie=========>
-        <section class="philo-section">
-            <h2 id="philosophie">Notre philosophie pédagogique</h2>
-            <p>
-                <strong>Apprendre d'abord, augmenter ensuite.</strong><br>
-                La venue de l’IA n’a pas pour objectif de supprimer l’apprentissage du
-                développement web ni de permettre à l’apprenant de contourner l’effort nécessaire
-                à la construction de ses compétences. Elle doit devenir un outil au service d’un
-                développeur qui sait déjà réfléchir.
-            </p>
-            
-            <a href="">Participer au programme pilote</a>
-        </section>
-        <!=============Principe du double apprentissage===============>
-        <section class="double-apprentissage-section">
-            <h2 id="principe-apprentissage">Principe du double apprentissage</h2>
-            <ol>
-                <li>Apprendre à développer sans dépendre de l’IA : logique, syntaxe, algorithmique, debugging,
-                    documentation, pratique et construction de projets.</li>
-                <li>Apprendre à développer avec l’IA : utiliser l’IA pour comprendre, expliquer, vérifier, accélérer,
-                    améliorer et automatiser certaines tâches.</li>
-            </ol>
-        </section>
-        <!================= Règle d'usage de l'IA=========>
-        <section class="ia-section">
-            <h2 id="regle-usage-ia">Règle d'usage de l'IA</h2>
-            <p>
-                Pour un exercice d’apprentissage, l’apprenant doit d’abord chercher à comprendre le problème,
-                formuler une approche et effectuer des tentatives. L’IA peut aider à expliquer un concept ou un
-                message d’erreur. Elle ne doit pas fournir immédiatement la correction complète lorsque cela
-                court-circuite l’apprentissage. Lorsqu’une solution générée est utilisée, l’apprenant doit être capable
-                de la comprendre, de l’expliquer, de la modifier et de la reproduire.
-            </p>
-        </section>
-        <!================= Profil cible============>
-        <section class="profil-section">
-            <h2 id="profil-cible">Profil cible</h2>
-            <div>
-                <p>
-                    <strong>Sans IA : </strong>l’apprenant est capable de réfléchir, chercher, coder, déboguer et
-                    construire.
-                </p>
-                <p>
-                    <strong>Avec l'IA : </strong>il devient plus rapide, plus productif et capable d’aborder des problèmes
-                    plus ambitieux.
+                <p>Yimma Pilote donne d'abord les fondamentaux du web, les compétences en developpement 
+                    tout en intercalant les langages pour donner la main aux apprenants très tôt avant de 
+                    passer aux projets. Ensuite, ils apprennent à travailler avec l'IA comme un assistant 
+                    et non un guide. Nous délivrerons également une attestation de participation pour valoir
+                    ce que de droit.
                 </p>
             </div>
-        </section>
-        <!===================Principe directeur=============>
-        <section class="principe-section">
-            <h2 id="principe-directeur">Principe directeur de Yimma Pilote</h2>
-            <p>Former d’abord le développeur. Ensuite augmenter le développeur avec l’IA.</p>
-            <div>
-                <p>Prêt pour l'aventure ?</p>
-                <a href="">Rejoins nous maintenant</a>
+
+            <div class="skill">
+                <div class="ic web">icone</div>
+                <div>
+                    <h3>fondamentaux du web</h3>
+                    <p>Inernet vs web, DNS, requêtes http et https, DevTools, Git/GiHub, environnement de travail...</p>
+                </div>
             </div>
-        </section>
-    </main>
+
+            <div class="skill">
+                <div class="ic html">icone</div>
+                <div>
+                    <h3>HTML5</h3>
+                    <p>Structure d'un document html, sémentique html, formulaires et accessibilté html, html intermédiaire & avancé...</p>
+                </div>
+            </div>
+
+            <div class="skill">
+                <div class="ic css">icone</div>
+                <div>
+                    <h3>CSS3</h3>
+                    <p>Sélecteurs CSS, Box Modal, CSS grid, Flexbox, CSS intermédiaire & avancé...</p>
+                </div>
+            </div>
+
+            <div class="skill">
+                <div class="ic js">icone</div>
+                <div>
+                    <h3>JavaScript</h3>
+                    <p>Js de base, fonctions, natives, fléchées & classiques, manipulaion du DOM, gestion des évènement, POO en JS...</p>
+                </div>
+            </div>
+
+            <div class="skill">
+                <div class="ic ia">icone</div>
+                <div>
+                    <h3>Copilot IA</h3>
+                    <p>Apprends à coder avec efficacement avec l'IA sans dépendre d'elle, notamment avec copilot et claude code.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Conditions d'accès -->
+    <section class="conditions-section">
+        <h2 id="conditions">Conditions de participation au programme pilote</h2>
+        <div>
+            <div>
+                <h3>Engagement</h3>
+                <p>Être réellement disposé à apprendre et à travailler régulièrement.</p>
+            </div>
+            <div>
+                <h3>Progression publique</h3>
+                <p>Publier régulièrement sa progression, ses difficultés, ses apprentissages et ses
+                    réalisations sur LinkedIn et Facebook.</p>
+            </div>
+            <div>
+                <h3>Exercices</h3>
+                <p>Traiter les exercices confiés et soumettre son travail dans les délais définis.</p>
+            </div>
+            <div>
+                <h3>Projets</h3>
+                <p>Réaliser les mini-projets et productions demandés afin de construire
+                    progressivement des preuves de compétence.</p>
+            </div>
+            <div>
+                <h3>Assiduité</h3>
+                <p>Rester actif dans le programme, signaler et justifier les difficultés ou absences
+                    prolongées.</p>
+            </div>
+            <div>
+                <h3>Autonomie</h3>
+                <p>Chercher, expérimenter et tenter de résoudre les problèmes avant de
+                    demander une solution toute faite. </p>
+            </div>
+            <div>
+                <h3>Intégrité</h3>
+                <p>S'impregner des valeurs de la plateforme, s'engager à les respecter et les incarner.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Philosophie -->
+    <section class="philo-section">
+        <h2 id="philosophie">Notre philosophie pédagogique</h2>
+        <p>
+            <strong>Apprendre d'abord, augmenter ensuite.</strong><br>
+            La venue de l’IA n’a pas pour objectif de supprimer l’apprentissage du
+            développement web ni de permettre à l’apprenant de contourner l’effort nécessaire
+            à la construction de ses compétences. Elle doit devenir un outil au service d’un
+            développeur qui sait déjà réfléchir.
+        </p>
+
+        <a href="">Participer au programme pilote</a>
+    </section>
+
+    <!-- Principe du double apprentissage -->
+    <section class="double-apprentissage-section">
+        <h2 id="principe-apprentissage">Principe du double apprentissage</h2>
+        <ol>
+            <li>Apprendre à développer sans dépendre de l’IA : logique, syntaxe, algorithmique, debugging,
+                documentation, pratique et construction de projets.</li>
+            <li>Apprendre à développer avec l’IA : utiliser l’IA pour comprendre, expliquer, vérifier, accélérer,
+                améliorer et automatiser certaines tâches.</li>
+        </ol>
+    </section>
+
+    <!-- Règle d'usage de l'IA -->
+    <section class="ia-section">
+        <h2 id="regle-usage-ia">Règle d'usage de l'IA</h2>
+        <p>
+            Pour un exercice d’apprentissage, l’apprenant doit d’abord chercher à comprendre le problème,
+            formuler une approche et effectuer des tentatives. L’IA peut aider à expliquer un concept ou un
+            message d’erreur. Elle ne doit pas fournir immédiatement la correction complète lorsque cela
+            court-circuite l’apprentissage. Lorsqu’une solution générée est utilisée, l’apprenant doit être capable
+            de la comprendre, de l’expliquer, de la modifier et de la reproduire.
+        </p>
+    </section>
+
+    <!-- Profil cible -->
+    <section class="profil-section">
+        <h2 id="profil-cible">Profil cible</h2>
+        <div>
+            <p>
+                <strong>Sans IA : </strong>l’apprenant est capable de réfléchir, chercher, coder, déboguer et
+                construire.
+            </p>
+            <p>
+                <strong>Avec l'IA : </strong>il devient plus rapide, plus productif et capable d’aborder des problèmes
+                plus ambitieux.
+            </p>
+        </div>
+    </section>
+
+    <!-- Principe directeur -->
+    <section class="principe-section">
+        <h2 id="principe-directeur">Principe directeur de Yimma Pilote</h2>
+        <p>Former d’abord le développeur. Ensuite augmenter le développeur avec l’IA.</p>
+        <div>
+            <p>Prêt pour l'aventure ?</p>
+            <a href="">Rejoins nous maintenant</a>
+        </div>
+    </section>
+</main>
+
+<script>
+    (function () {
+        var toggle = document.getElementById('menu-toggle');
+        var menu = document.getElementById('menu');
+        var closeBtn = menu.querySelector('.close-nav');
+        var overlay = document.createElement('div');
+        overlay.className = 'nav-overlay';
+        document.body.appendChild(overlay);
+
+        toggle.setAttribute('role', 'button');
+        toggle.setAttribute('tabindex', '0');
+        toggle.setAttribute('aria-label', 'Ouvrir le menu');
+        toggle.setAttribute('aria-controls', 'menu');
+        toggle.setAttribute('aria-expanded', 'false');
+
+        function setMenu(open) {
+            menu.classList.toggle('open', open);
+            overlay.classList.toggle('open', open);
+            toggle.setAttribute('aria-expanded', String(open));
+            document.body.style.overflow = open ? 'hidden' : '';
+        }
+
+        // Clic sur le ≡ uniquement (pas sur le contenu du menu)
+        toggle.addEventListener('click', function (e) {
+            if (e.target === toggle) setMenu(!menu.classList.contains('open'));
+        });
+        toggle.addEventListener('keydown', function (e) {
+            if (e.target === toggle && (e.key === 'Enter' || e.key === ' ')) {
+                e.preventDefault();
+                setMenu(!menu.classList.contains('open'));
+            }
+        });
+        closeBtn.addEventListener('click', function () { setMenu(false); });
+        overlay.addEventListener('click', function () { setMenu(false); });
+        menu.addEventListener('click', function (e) {
+            if (e.target.closest('a')) setMenu(false);
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') setMenu(false);
+        });
+        window.matchMedia('(min-width: 1024px)').addEventListener('change', function (e) {
+            if (e.matches) setMenu(false);
+        });
+    })();
+</script>
 </body>
 </html>
